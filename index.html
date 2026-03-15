@@ -938,7 +938,7 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
 
   // Telegram风格：时间戳+爱心 float到最后一段末尾，能同行就同行
   const tsBlock = timeStr ? <span key="__ts" style={{
-    float: "right", marginLeft: 8, marginTop: 8,
+    float: "right", marginLeft: 6, marginTop: 4,
     display: "inline-flex", alignItems: "center", gap: 3,
     fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer,
     lineHeight: "14px",
@@ -949,7 +949,7 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
     </span>
     {timeStr}
   </span> : null;
-  const spacer = timeStr ? <span key="__sp" style={{ display: "inline-block", width: 55, height: 1 }} /> : null;
+  const spacer = timeStr ? <span key="__sp" style={{ display: "inline-block", width: 45, height: 1 }} /> : null;
   const cf = timeStr ? <div key="__cf" style={{ clear: "both" }} /> : null;
 
   let finalContent = rendered;
