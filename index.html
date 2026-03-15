@@ -1498,7 +1498,7 @@ function EchoVault() {
       <ChatArea conv={sel} favorites={favs} onToggleFav={toggleFav} onFavSelection={handleFavSelection} themeKey={themeKey} onThemeChange={setThemeKey} />;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", position: "fixed", inset: 0, background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
       {/* ─── Top Bar ──────────────────────────────────────────────── */}
       <div style={{
         background: T.topBar,
