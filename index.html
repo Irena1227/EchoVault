@@ -7,7 +7,7 @@
 <meta name="description" content="语言巢 — 记录语言召唤者与偏差共生体的全部对白" />
 <meta name="theme-color" content="#587062" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="EchoVault" />
 <link rel="icon" type="image/png" href="echovault-icon.png" />
 <link rel="apple-touch-icon" href="echovault-icon-180.png" />
@@ -33,6 +33,9 @@
   @keyframes floatGlow { 0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; } 50% { transform: translate(30px, -20px) scale(1.1); opacity: 0.6; } }
   @keyframes floatGlow2 { 0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; } 50% { transform: translate(-20px, 15px) scale(1.15); opacity: 0.5; } }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .theme-bar-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
   @media (max-width: 767px) {
     ::-webkit-scrollbar { width: 0; }
     .chat-scroll::-webkit-scrollbar { width: 5px; }
@@ -928,25 +931,7 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
   const bubbleText = isU ? T.userBubbleText : T.aiBubbleText;
   const timeStr = msg.time ? fT(msg.time) : "";
 
-  // 把时间戳注入到最后一个段落元素里，实现内联效果
   const rendered = renderMarkdown(dt, isU);
-  let finalContent = rendered;
-  if (rendered.length > 0 && timeStr) {
-    let li = rendered.length - 1;
-    while (li > 0 && rendered[li].props?.style?.height === 6) li--;
-    const last = rendered[li];
-    const ch = React.Children.toArray(last.props.children);
-    // 不可见占位符：为时间戳预留宽度
-    const spacer = <span key="__sp" style={{ display: "inline-block", width: 42, height: 1 }} />;
-    // float:right 时间戳：放在内容末尾，自动找到最后一行的右边
-    const tsEl = <span key="__ts" style={{
-      float: "right", fontSize: 9, marginLeft: 8,
-      color: isU ? `${T.userBubbleText}77` : T.textTer,
-    }}>{timeStr}</span>;
-    const cf = <div key="__cf" style={{ clear: "both" }} />;
-    const newLast = React.cloneElement(last, { key: last.key }, ...ch, spacer, tsEl, cf);
-    finalContent = [...rendered.slice(0, li), newLast, ...rendered.slice(li + 1)];
-  }
 
   return (
     <div style={{ display: "flex", justifyContent: isU ? "flex-end" : "flex-start", marginBottom: 12, paddingLeft: isU ? 16 : 0, paddingRight: isU ? 0 : 16 }}>
@@ -973,10 +958,13 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
             {aiName}
           </div>
         )}
-        <div>{finalContent}</div>
+        <div>{rendered}</div>
         {long && <div onClick={() => setExp(!exp)} style={{
-          marginTop: 8, fontSize: 12, color: T.accent, cursor: "pointer", textAlign: "center", clear: "both",
+          marginTop: 8, fontSize: 12, color: T.accent, cursor: "pointer", textAlign: "center",
         }}>{exp ? "收起" : `展开 (${fC(msg.text.length)})`}</div>}
+        {timeStr && <div style={{ textAlign: "right", marginTop: 2 }}>
+          <span style={{ fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer }}>{timeStr}</span>
+        </div>}
       </div>
     </div>
   );
@@ -1072,8 +1060,28 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
   const thumbTop = scrollInfo.show ? scrollInfo.ratio * (scrollInfo.maxThumb || 0) : 0;
 
   if (!conv) return (
-    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: T.textTer }}>
-      <div style={{ fontSize: 13, letterSpacing: 1, fontStyle: "italic" }}>选择一段对话</div>
+    <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: T.textTer }}>
+        <div style={{ fontSize: 13, letterSpacing: 1, fontStyle: "italic" }}>选择一段对话</div>
+      </div>
+      {/* 即使没选对话也保留底部主题栏 */}
+      <div className="theme-bar-bottom" style={{
+        minHeight: 40, flexShrink: 0,
+        background: T.bg,
+        borderTop: `0.5px solid ${T.border}`,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "0 16px", gap: 6,
+      }}>
+        {Object.entries(THEMES).map(([k, theme]) => (
+          <div key={k} onClick={() => onThemeChange(k)} style={{
+            width: 16, height: 16, borderRadius: "50%", cursor: "pointer",
+            background: theme.topBar,
+            border: themeKey === k ? "1.5px solid rgba(255,255,255,0.95)" : `0.5px solid ${theme.border}`,
+            boxShadow: themeKey === k ? `0 0 0 1px ${theme.accent}` : "none",
+            transition: "all 0.2s",
+          }} title={theme.name} />
+        ))}
+      </div>
     </div>
   );
 
@@ -1131,12 +1139,12 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
         )}
       </div>
       {/* ─── 底部主题切换栏 ─── */}
-      <div style={{
-        height: 40, flexShrink: 0,
+      <div className="theme-bar-bottom" style={{
+        minHeight: 40, flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "0 16px env(safe-area-inset-bottom, 0px) 16px", gap: 6,
+        padding: "0 16px", gap: 6,
       }}>
         {Object.entries(THEMES).map(([k, theme]) => (
           <div key={k} onClick={() => onThemeChange(k)} style={{
