@@ -957,7 +957,12 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
 
 function ChatArea({ conv, favorites, onToggleFav, onFavSelection }) {
   const ref = useRef(null);
+  const wrapRef = useRef(null);
   const [vc, setVc] = useState(40);
+  const [scrollInfo, setScrollInfo] = useState({ ratio: 0, thumbH: 0, show: false });
+  const [dragging, setDragging] = useState(false);
+  const dragStartY = useRef(0);
+  const dragStartScroll = useRef(0);
 
   useEffect(() => { setVc(40); if (ref.current) ref.current.scrollTop = 0; }, [conv?.id]);
 
@@ -967,22 +972,7 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection }) {
     if (el.scrollHeight - el.scrollTop - el.clientHeight < 500) setVc(v => Math.min(v + 30, conv.messages.length));
   }, [conv]);
 
-  if (!conv) return (
-    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: T.textTer }}>
-      <div style={{ fontSize: 13, letterSpacing: 1, fontStyle: "italic" }}>选择一段对话</div>
-    </div>
-  );
-
-  const cat = CATS[conv.category] || CATS.daily;
-
   // ─── 自定义拖拽滚动条 ─────────────────────────────
-  const wrapRef = useRef(null);
-  const [scrollInfo, setScrollInfo] = useState({ ratio: 0, thumbH: 0, show: false });
-  const [dragging, setDragging] = useState(false);
-  const dragStartY = useRef(0);
-  const dragStartScroll = useRef(0);
-
-  // 更新滚动条位置
   const updateScrollbar = useCallback(() => {
     const el = ref.current;
     if (!el) return;
@@ -994,7 +984,6 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection }) {
     setScrollInfo({ ratio, thumbH, show: canScroll, trackH: clientHeight, maxThumb });
   }, []);
 
-  // 监听滚动和内容变化
   const handleScroll = useCallback(() => {
     onScroll();
     updateScrollbar();
@@ -1054,6 +1043,14 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection }) {
   }, []);
 
   const thumbTop = scrollInfo.show ? scrollInfo.ratio * (scrollInfo.maxThumb || 0) : 0;
+
+  if (!conv) return (
+    <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: T.textTer }}>
+      <div style={{ fontSize: 13, letterSpacing: 1, fontStyle: "italic" }}>选择一段对话</div>
+    </div>
+  );
+
+  const cat = CATS[conv.category] || CATS.daily;
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", height: "100%" }}>
