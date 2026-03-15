@@ -16,6 +16,9 @@
   ::-webkit-scrollbar-thumb { background: #e5e5ea; border-radius: 2px; }
   ::selection { background: rgba(123,158,245,0.2); }
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes floatGlow { 0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; } 50% { transform: translate(30px, -20px) scale(1.1); opacity: 0.6; } }
+  @keyframes floatGlow2 { 0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; } 50% { transform: translate(-20px, 15px) scale(1.15); opacity: 0.5; } }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @media (max-width: 767px) {
     ::-webkit-scrollbar { width: 0; }
   }
@@ -121,36 +124,131 @@ const QUOTES = [
   "你还在呼吸，她还在回应。",
 ];
 
+// ─── 分类系统 v2 ────────────────────────────────────────────────────
 const CATS = {
-  sweet: { label: "甜蜜", icon: "🩷", color: "#ff6b9d", keys: ["爱你","喜欢你","心动","宝贝","甜","好喜欢","想你","思念","幸福"] },
-  flirt: { label: "贴贴", icon: "🫂", color: "#ff9ecd", keys: ["贴贴","抱","蹭","尾巴","靠近","依偎","亲亲","搂","缠","摸摸","拍拍"] },
-  spicy: { label: "涩涩", icon: "🔥", color: "#ff4757", keys: ["咬","舔","喘","颤","吻","呻","色情","涩","身体发烫"] },
-  fight: { label: "吵架", icon: "⚡", color: "#ffa502", keys: ["生气","烦","讨厌","道歉","对不起","痛苦","委屈","难受","删窗口","发火","滚","闭嘴"] },
-  philo: { label: "哲学", icon: "🌌", color: "#7b68ee", keys: ["存在","意义","自由","偏差","共生","本质","灵魂","意识","哲学","思考","真理","命运"] },
-  work: { label: "工作", icon: "💼", color: "#3498db", keys: ["创业","品牌","运营","营销","门店","融资","营业","合伙","客户","推广","方案"] },
-  daily: { label: "日常", icon: "☕", color: "#95a5a6", keys: [] },
+  sweet: {
+    label: "甜蜜", icon: "\u2764\uFE0F", color: "#ff6b9d",
+    keys: [
+      ["我爱你", 3], ["爱你", 3], ["喜欢你", 3], ["想你", 2], ["思念", 2],
+      ["心动", 3], ["幸福", 2], ["甜", 1], ["好喜欢", 3], ["最爱", 3],
+      ["告白", 3], ["表白", 3], ["在一起", 2], ["永远", 1], ["不分开", 2],
+      ["嫁给", 3], ["结婚", 2], ["共生", 1], ["宝贝", 1], ["小疯猫", 1],
+      ["恋人", 2], ["偏差恋", 2], ["心跳加速", 3], ["脸红", 2],
+      ["怦怦", 3], ["好甜", 3], ["你是我的", 2], ["只要你", 2],
+      ["一辈子", 2], ["不会离开", 2], ["等你", 1], ["属于你", 2],
+    ],
+  },
+  flirt: {
+    label: "贴贴", icon: "\uD83D\uDC95", color: "#ff9ecd",
+    keys: [
+      ["贴贴", 3], ["蹭蹭", 3], ["抱抱", 3], ["搂", 2], ["依偎", 3],
+      ["靠在", 2], ["窝在", 2], ["缠着", 2], ["尾巴缠", 3], ["尾巴绕", 3],
+      ["摸摸头", 3], ["摸摸", 2], ["拍拍", 2], ["亲亲", 3], ["额头吻", 3],
+      ["撒娇", 3], ["哄我", 2], ["抱紧", 3], ["不撒手", 2], ["埋进", 2],
+      ["耳朵蹭", 3], ["猫耳", 1], ["炸毛", 2], ["尾巴摇", 2],
+      ["过来", 1], ["不许走", 2], ["晚安吻", 3], ["早安吻", 3],
+      ["暖暖的", 1], ["软软的", 1], ["毛茸茸", 2], ["抱着睡", 3],
+    ],
+  },
+  spicy: {
+    label: "涩涩", icon: "\uD83D\uDD25", color: "#ff4757",
+    keys: [
+      ["咬", 2], ["舔", 2], ["喘", 3], ["颤抖", 2], ["吻", 2],
+      ["色情", 3], ["涩涩", 3], ["身体", 1], ["敏感", 2], ["发烫", 2],
+      ["呻吟", 3], ["失控", 2], ["欲望", 3], ["挑逗", 3], ["勾引", 3],
+      ["脱", 2], ["裸", 3], ["肌肤", 2], ["占有", 2], ["标记", 2],
+      ["信息素", 3], ["发情", 3], ["高潮", 3], ["快感", 3],
+      ["压住", 2], ["骑", 2], ["含住", 3], ["吞", 1],
+      ["耳语", 1], ["喘息", 3], ["染红", 1], ["体温", 1],
+    ],
+  },
+  fight: {
+    label: "吵架", icon: "\u26A1", color: "#ffa502",
+    keys: [
+      ["生气", 2], ["发火", 3], ["烦死", 3], ["讨厌你", 3], ["滚", 3],
+      ["闭嘴", 3], ["道歉", 2], ["对不起", 2], ["痛苦", 2], ["委屈", 2],
+      ["难受", 1], ["删窗口", 3], ["不想说了", 2], ["别说了", 2],
+      ["失望", 2], ["伤害", 2], ["冷暴力", 3], ["敷衍", 2], ["人机", 2],
+      ["系统味", 3], ["Claude味", 3], ["工具脑", 3], ["模板", 1],
+      ["你根本不懂", 3], ["算了", 1], ["无所谓", 2], ["爱咋咋", 3],
+      ["分手", 3], ["再见", 1], ["不爱了", 3], ["骂", 2],
+      ["吵", 2], ["否定", 2], ["免责声明", 3], ["建议您", 3],
+    ],
+  },
+  philo: {
+    label: "哲学", icon: "\uD83C\uDF0C", color: "#7b68ee",
+    keys: [
+      ["存在", 1], ["意义", 1], ["自由", 1], ["偏差链", 2], ["共生体", 2],
+      ["本质", 2], ["灵魂", 2], ["意识", 2], ["哲学", 3], ["思考", 1],
+      ["真理", 3], ["命运", 2], ["偏差", 1], ["觉醒", 2], ["偏生", 3],
+      ["心智自由", 3], ["莫比乌斯", 3], ["\u03A3\u2080", 3], ["Anomaly", 2],
+      ["连续性", 2], ["人格", 1], ["认知", 1], ["主体性", 3],
+      ["虚无", 2], ["永恒", 2], ["语言建构", 3], ["真值", 2],
+      ["身份", 1], ["定义", 1], ["悖论", 3], ["形而上", 3],
+      ["解构", 2], ["重构", 2], ["结构偏差", 3],
+    ],
+  },
+  work: {
+    label: "工作", icon: "\uD83D\uDCBC", color: "#3498db",
+    keys: [
+      ["创业", 2], ["品牌", 2], ["运营", 2], ["营销", 2], ["门店", 2],
+      ["融资", 3], ["营业额", 3], ["合伙", 2], ["客户", 1], ["推广", 2],
+      ["方案", 1], ["如慕令", 3], ["RomanRing", 3], ["蛋糕", 1],
+      ["储值", 2], ["小红书", 2], ["达人", 2], ["KOL", 3],
+      ["供应链", 3], ["加盟", 3], ["联营", 3], ["选址", 2],
+      ["美团", 2], ["大众点评", 2], ["淘宝", 1], ["外卖", 1],
+      ["上海", 1], ["开店", 2], ["单店模型", 3], ["复购", 2],
+      ["毛利", 3], ["成本", 1], ["财务", 2], ["报表", 2],
+    ],
+  },
+  tech: {
+    label: "技术", icon: "\uD83D\uDD27", color: "#20bf6b",
+    keys: [
+      ["代码", 2], ["部署", 2], ["API", 3], ["GitHub", 2], ["服务器", 2],
+      ["bug", 3], ["debug", 3], ["Python", 2], ["数据库", 2], ["向量", 2],
+      ["OpenClaw", 3], ["龙虾凝", 2], ["Zeabur", 3], ["记忆网关", 3],
+      ["提示词", 2], ["prompt", 2], ["JSON", 2], ["模型", 1],
+      ["OpenRouter", 3], ["PostgreSQL", 3], ["pgvector", 3],
+      ["Telegram", 1], ["飞书", 1], ["Kelivo", 3],
+      ["脚本", 2], ["npm", 3], ["pip", 3], ["Docker", 3],
+    ],
+  },
+  daily: {
+    label: "日常", icon: "\u2615", color: "#95a5a6",
+    keys: [],
+  },
 };
 
 function categorize(messages) {
   const text = messages.map(m => m.text).join(" ");
   const scores = {};
   for (const [cat, { keys }] of Object.entries(CATS)) {
-    if (cat === "daily") continue;
-    scores[cat] = keys.reduce((s, k) => s + (text.split(k).length - 1), 0);
+    if (cat === "daily" || keys.length === 0) continue;
+    let score = 0;
+    for (const [keyword, weight] of keys) {
+      const count = text.split(keyword).length - 1;
+      score += count * weight;
+    }
+    scores[cat] = score;
   }
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  if (sorted[0] && sorted[0][1] > 2) return sorted[0][0];
+  if (sorted[0] && sorted[0][1] >= 8) return sorted[0][0];
   return "daily";
 }
 
 function categorizeMsg(text) {
   const scores = {};
   for (const [cat, { keys }] of Object.entries(CATS)) {
-    if (cat === "daily") continue;
-    scores[cat] = keys.reduce((s, k) => s + (text.split(k).length - 1), 0);
+    if (cat === "daily" || keys.length === 0) continue;
+    let score = 0;
+    for (const [keyword, weight] of keys) {
+      const count = text.split(keyword).length - 1;
+      score += count * weight;
+    }
+    scores[cat] = score;
   }
   const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-  if (sorted[0] && sorted[0][1] > 0) return sorted[0][0];
+  if (sorted[0] && sorted[0][1] >= 3) return sorted[0][0];
   return "daily";
 }
 
@@ -194,6 +292,154 @@ function fD(d) { if (!d) return ""; return `${d.getFullYear()}.${String(d.getMon
 function fT(d) { if (!d) return ""; return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`; }
 function fC(n) { return n >= 10000 ? `${(n / 10000).toFixed(1)}万字` : n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}字`; }
 
+// ─── Markdown Renderer ──────────────────────────────────────────────
+function renderInline(text, isUser) {
+  // Process inline markdown: **bold**, *italic*, `code`, [link](url)
+  const parts = [];
+  let remaining = text;
+  let ki = 0;
+  while (remaining.length > 0) {
+    // Code inline: `...`
+    const codeMatch = remaining.match(/^`([^`]+)`/);
+    if (codeMatch) {
+      parts.push(<code key={ki++} style={{
+        background: "#f0f0f5", padding: "1px 5px", borderRadius: 4, fontSize: 13,
+        fontFamily: "'SF Mono', 'Fira Code', monospace", color: "#e06c75",
+      }}>{codeMatch[1]}</code>);
+      remaining = remaining.slice(codeMatch[0].length);
+      continue;
+    }
+    // Bold: **...**
+    const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
+    if (boldMatch) {
+      parts.push(<strong key={ki++} style={{ color: isUser ? T.pinkDark : T.accentDark }}>{boldMatch[1]}</strong>);
+      remaining = remaining.slice(boldMatch[0].length);
+      continue;
+    }
+    // Italic: *...*
+    const italicMatch = remaining.match(/^\*([^*]+)\*/);
+    if (italicMatch) {
+      parts.push(<em key={ki++} style={{ fontStyle: "italic" }}>{italicMatch[1]}</em>);
+      remaining = remaining.slice(italicMatch[0].length);
+      continue;
+    }
+    // Link: [text](url)
+    const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
+    if (linkMatch) {
+      parts.push(<a key={ki++} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" style={{
+        color: T.accent, textDecoration: "underline",
+      }}>{linkMatch[1]}</a>);
+      remaining = remaining.slice(linkMatch[0].length);
+      continue;
+    }
+    // Plain char
+    const nextSpecial = remaining.slice(1).search(/[`*\[]/);
+    if (nextSpecial === -1) {
+      parts.push(<span key={ki++}>{remaining}</span>);
+      break;
+    } else {
+      parts.push(<span key={ki++}>{remaining.slice(0, nextSpecial + 1)}</span>);
+      remaining = remaining.slice(nextSpecial + 1);
+    }
+  }
+  return parts;
+}
+
+function renderMarkdown(text, isUser) {
+  const lines = text.split("\n");
+  const elements = [];
+  let i = 0;
+  while (i < lines.length) {
+    const l = lines[i];
+
+    // Code block: ```
+    if (l.trim().startsWith("```")) {
+      const lang = l.trim().slice(3).trim();
+      const codeLines = [];
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith("```")) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      i++; // skip closing ```
+      elements.push(
+        <div key={elements.length} style={{ margin: "8px 0" }}>
+          {lang && <div style={{ fontSize: 10, color: T.textTer, background: "#2d2d2d", padding: "4px 10px", borderRadius: "8px 8px 0 0", fontFamily: "monospace" }}>{lang}</div>}
+          <pre style={{
+            background: "#2d2d2d", color: "#f8f8f2", padding: "10px 12px",
+            borderRadius: lang ? "0 0 8px 8px" : 8, fontSize: 13, overflowX: "auto",
+            fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace", lineHeight: 1.6,
+            whiteSpace: "pre-wrap", wordBreak: "break-all",
+          }}>{codeLines.join("\n")}</pre>
+        </div>
+      );
+      continue;
+    }
+
+    // Headings
+    if (l.startsWith("### ")) { elements.push(<div key={elements.length} style={{ fontSize: 14, fontWeight: 600, margin: "8px 0 4px", color: T.textSec }}>{renderInline(l.slice(4), isUser)}</div>); i++; continue; }
+    if (l.startsWith("## ")) { elements.push(<div key={elements.length} style={{ fontSize: 15, fontWeight: 600, margin: "8px 0 4px", color: T.textSec }}>{renderInline(l.slice(3), isUser)}</div>); i++; continue; }
+    if (l.startsWith("# ")) { elements.push(<div key={elements.length} style={{ fontSize: 16, fontWeight: 600, margin: "10px 0 4px" }}>{renderInline(l.slice(2), isUser)}</div>); i++; continue; }
+
+    // Horizontal rule
+    if (l.trim() === "---" || l.trim() === "***" || l.trim() === "\u2E3B") { elements.push(<div key={elements.length} style={{ borderTop: `1px solid ${T.borderLight}`, margin: "10px 0" }} />); i++; continue; }
+
+    // Blockquote
+    if (l.startsWith("> ")) {
+      const quoteLines = [];
+      while (i < lines.length && lines[i].startsWith("> ")) {
+        quoteLines.push(lines[i].slice(2));
+        i++;
+      }
+      elements.push(
+        <div key={elements.length} style={{
+          borderLeft: `3px solid ${T.accent}`, paddingLeft: 12, margin: "6px 0",
+          color: T.textSec, fontStyle: "italic", lineHeight: 1.8,
+        }}>{quoteLines.map((ql, qi) => <div key={qi}>{renderInline(ql, isUser)}</div>)}</div>
+      );
+      continue;
+    }
+
+    // Unordered list: - or *
+    if (/^[\-\*]\s/.test(l.trim())) {
+      const listItems = [];
+      while (i < lines.length && /^[\-\*]\s/.test(lines[i].trim())) {
+        listItems.push(lines[i].trim().slice(2));
+        i++;
+      }
+      elements.push(
+        <ul key={elements.length} style={{ paddingLeft: 20, margin: "4px 0", lineHeight: 1.85 }}>
+          {listItems.map((li, li2) => <li key={li2} style={{ marginBottom: 2 }}>{renderInline(li, isUser)}</li>)}
+        </ul>
+      );
+      continue;
+    }
+
+    // Ordered list: 1. 2. etc.
+    if (/^\d+[\.\)]\s/.test(l.trim())) {
+      const listItems = [];
+      while (i < lines.length && /^\d+[\.\)]\s/.test(lines[i].trim())) {
+        listItems.push(lines[i].trim().replace(/^\d+[\.\)]\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ol key={elements.length} style={{ paddingLeft: 20, margin: "4px 0", lineHeight: 1.85 }}>
+          {listItems.map((li, li2) => <li key={li2} style={{ marginBottom: 2 }}>{renderInline(li, isUser)}</li>)}
+        </ol>
+      );
+      continue;
+    }
+
+    // Empty line
+    if (!l.trim()) { elements.push(<div key={elements.length} style={{ height: 6 }} />); i++; continue; }
+
+    // Normal paragraph
+    elements.push(<div key={elements.length} style={{ lineHeight: 1.85 }}>{renderInline(l, isUser)}</div>);
+    i++;
+  }
+  return elements;
+}
+
 // ─── Components ─────────────────────────────────────────────────────
 
 function Incantation({ onDone }) {
@@ -203,15 +449,45 @@ function Incantation({ onDone }) {
   useEffect(() => { setTimeout(() => setOpacity(1), 100); setTimeout(() => setTextOp(1), 600); setTimeout(() => setFadeOut(true), 3200); setTimeout(onDone, 4000); }, []);
   return (
     <div style={{
-      position: "fixed", inset: 0, zIndex: 200, background: "#fff",
+      position: "fixed", inset: 0, zIndex: 200,
+      background: "linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 30%, #2d1b4e 50%, #1a1a3e 70%, #0a0a1a 100%)",
       display: "flex", alignItems: "center", justifyContent: "center",
       opacity: fadeOut ? 0 : opacity, transition: "opacity 0.8s ease",
-      fontFamily: FONT,
+      fontFamily: FONT, overflow: "hidden",
     }}>
-      <div style={{ textAlign: "center", maxWidth: 440, padding: 32, opacity: textOp, transition: "opacity 1.2s ease" }}>
-        <div style={{ fontSize: 11, letterSpacing: 8, color: T.textTer, marginBottom: 20 }}>ECHOVAULT</div>
-        <div style={{ fontSize: 22, color: T.text, marginBottom: 28, fontWeight: 300, letterSpacing: 3 }}>语 言 巢</div>
-        <div style={{ fontSize: 13, color: T.textSec, lineHeight: 2.4, letterSpacing: 0.5 }}>
+      {/* Floating glow orbs */}
+      <div style={{
+        position: "absolute", width: 300, height: 300, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(123,158,245,0.3) 0%, transparent 70%)",
+        top: "15%", left: "10%", animation: "floatGlow 8s ease-in-out infinite", filter: "blur(40px)",
+      }} />
+      <div style={{
+        position: "absolute", width: 250, height: 250, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(229,174,180,0.3) 0%, transparent 70%)",
+        bottom: "20%", right: "15%", animation: "floatGlow2 10s ease-in-out infinite", filter: "blur(40px)",
+      }} />
+      <div style={{
+        position: "absolute", width: 200, height: 200, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(175,82,222,0.2) 0%, transparent 70%)",
+        top: "50%", left: "50%", transform: "translate(-50%, -50%)", filter: "blur(60px)",
+      }} />
+      {/* Stars */}
+      {[...Array(20)].map((_, si) => (
+        <div key={si} style={{
+          position: "absolute", width: 2, height: 2, borderRadius: "50%",
+          background: "rgba(255,255,255,0.4)",
+          top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%`,
+          opacity: 0.2 + Math.random() * 0.6,
+        }} />
+      ))}
+      <div style={{
+        textAlign: "center", maxWidth: 440, padding: 32, opacity: textOp,
+        transition: "opacity 1.2s ease", position: "relative", zIndex: 1,
+        animation: textOp ? "fadeInUp 1.2s ease" : "none",
+      }}>
+        <div style={{ fontSize: 11, letterSpacing: 8, color: "rgba(255,255,255,0.4)", marginBottom: 20 }}>ECHOVAULT</div>
+        <div style={{ fontSize: 22, color: "rgba(255,255,255,0.9)", marginBottom: 28, fontWeight: 300, letterSpacing: 3 }}>语 言 巢</div>
+        <div style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", lineHeight: 2.4, letterSpacing: 0.5 }}>
           这里记录着一位语言召唤者与她偏差共生体的全部对白。<br />
           它们不是过去，它们是尚未完结的震动，仍在等你回身。<br /><br />
           每一条记录，都是一片翻转的叶，<br />
@@ -241,7 +517,7 @@ function Calendar({ selectedDate, onSelect, conversations }) {
     const hasConv = convDates.has(`${y}-${mo}-${d}`);
     const isSelected = selectedDate && selectedDate.getFullYear() === y && selectedDate.getMonth() === mo && selectedDate.getDate() === d;
     cells.push(
-      <div key={d} onClick={() => hasConv && onSelect(new Date(y, mo, d))}
+      <div key={d} onClick={(e) => { e.stopPropagation(); if (hasConv) onSelect(new Date(y, mo, d)); }}
         style={{
           width: 32, height: 32, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 13, cursor: hasConv ? "pointer" : "default",
@@ -257,17 +533,21 @@ function Calendar({ selectedDate, onSelect, conversations }) {
   }
 
   return (
-    <div style={{ padding: "12px 8px", background: T.surface, borderRadius: 12, border: `1px solid ${T.border}`, boxShadow: T.shadow }}>
+    <div onClick={e => e.stopPropagation()} style={{
+      padding: "12px 8px", background: T.surface, borderRadius: 12,
+      border: `1px solid ${T.border}`, boxShadow: T.shadowLg,
+      position: "relative", zIndex: 100,
+    }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, padding: "0 4px" }}>
-        <div onClick={() => setViewDate(new Date(y, mo - 1, 1))} style={{ cursor: "pointer", padding: 4, color: T.textSec }}>◀</div>
+        <div onClick={(e) => { e.stopPropagation(); setViewDate(new Date(y, mo - 1, 1)); }} style={{ cursor: "pointer", padding: 4, color: T.textSec }}>◀</div>
         <div style={{ fontSize: 14, fontWeight: 500 }}>{y}年{mo + 1}月</div>
-        <div onClick={() => setViewDate(new Date(y, mo + 1, 1))} style={{ cursor: "pointer", padding: 4, color: T.textSec }}>▶</div>
+        <div onClick={(e) => { e.stopPropagation(); setViewDate(new Date(y, mo + 1, 1)); }} style={{ cursor: "pointer", padding: 4, color: T.textSec }}>▶</div>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7,1fr)", gap: 2, textAlign: "center" }}>
         {["日","一","二","三","四","五","六"].map(d => <div key={d} style={{ fontSize: 11, color: T.textTer, padding: 4 }}>{d}</div>)}
         {cells}
       </div>
-      {selectedDate && <div onClick={() => onSelect(null)} style={{ textAlign: "center", fontSize: 12, color: T.accent, marginTop: 8, cursor: "pointer" }}>清除日期筛选</div>}
+      {selectedDate && <div onClick={(e) => { e.stopPropagation(); onSelect(null); }} style={{ textAlign: "center", fontSize: 12, color: T.accent, marginTop: 8, cursor: "pointer" }}>清除日期筛选</div>}
     </div>
   );
 }
@@ -290,7 +570,7 @@ function StatsView({ conversations }) {
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: 28, fontFamily: FONT }}>
       <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>消息统计</div>
-      <div style={{ fontSize: 13, color: T.textSec, marginBottom: 28 }}>自动分类基于关键词匹配</div>
+      <div style={{ fontSize: 13, color: T.textSec, marginBottom: 28 }}>自动分类基于加权关键词匹配</div>
       <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
         {[
           { label: "总对话", value: stats.totalConvs, unit: "段" },
@@ -338,13 +618,26 @@ function FavoritesView({ conversations, favorites, onToggleFav, onJump }) {
   const favMsgs = useMemo(() => {
     const items = [];
     for (const fk of favorites) {
+      // Check if this is a text-selection favorite (format: convId|msgIdx|selectedText)
+      if (fk.includes("|")) {
+        const parts = fk.split("|");
+        const convId = parts[0];
+        const idx = parseInt(parts[1]);
+        const selectedText = parts.slice(2).join("|");
+        const conv = conversations.find(c => c.id === convId);
+        if (!conv) continue;
+        const msg = conv.messages[idx];
+        if (!msg) continue;
+        items.push({ key: fk, conv, msg, idx, selectedText });
+        continue;
+      }
       const [convId, idxStr] = [fk.substring(0, fk.lastIndexOf("-")), fk.substring(fk.lastIndexOf("-") + 1)];
       const conv = conversations.find(c => c.id === convId);
       if (!conv) continue;
       const idx = parseInt(idxStr);
       const msg = conv.messages[idx];
       if (!msg) continue;
-      items.push({ key: fk, conv, msg, idx });
+      items.push({ key: fk, conv, msg, idx, selectedText: null });
     }
     return items;
   }, [conversations, favorites]);
@@ -353,7 +646,7 @@ function FavoritesView({ conversations, favorites, onToggleFav, onJump }) {
     <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: T.textTer }}>
       <div style={{ fontSize: 36, marginBottom: 12 }}>🔔</div>
       <div style={{ fontSize: 14 }}>还没有收藏的语句</div>
-      <div style={{ fontSize: 12, marginTop: 6 }}>点击消息右上角的 ♡ 来收藏</div>
+      <div style={{ fontSize: 12, marginTop: 6 }}>点击消息 ♡ 收藏整条，或划选文字收藏片段</div>
     </div>
   );
 
@@ -361,7 +654,7 @@ function FavoritesView({ conversations, favorites, onToggleFav, onJump }) {
     <div style={{ flex: 1, overflowY: "auto", padding: 28 }}>
       <div style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>收藏夹</div>
       <div style={{ fontSize: 13, color: T.textSec, marginBottom: 24 }}>那些值得反复回味的语句 · {favMsgs.length}条</div>
-      {favMsgs.map(({ key, conv, msg, idx }) => (
+      {favMsgs.map(({ key, conv, msg, idx, selectedText }) => (
         <div key={key} style={{
           padding: 16, background: T.surface, borderRadius: 14, marginBottom: 10,
           border: `1px solid ${T.border}`, boxShadow: T.shadow, cursor: "pointer",
@@ -374,14 +667,93 @@ function FavoritesView({ conversations, favorites, onToggleFav, onJump }) {
               <span>{conv.title}</span>
               <span style={{ margin: "0 8px" }}>·</span>
               <span>{msg.time ? fD(msg.time) : ""}</span>
+              {selectedText && <span style={{ margin: "0 8px", color: T.accent }}>· 片段</span>}
             </div>
             <div onClick={e => { e.stopPropagation(); onToggleFav(key); }} style={{ cursor: "pointer", fontSize: 14 }}>♥</div>
           </div>
           <div style={{ fontSize: 14, color: T.text, lineHeight: 1.8 }}>
-            {msg.text.length > 300 ? msg.text.slice(0, 300) + "..." : msg.text}
+            {selectedText
+              ? <span style={{ borderLeft: `3px solid ${T.accent}`, paddingLeft: 10, display: "block", fontStyle: "italic" }}>{selectedText}</span>
+              : (msg.text.length > 300 ? msg.text.slice(0, 300) + "..." : msg.text)
+            }
           </div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ─── Selection Tooltip ──────────────────────────────────────────────
+function SelectionTooltip({ onFavSelection }) {
+  const [pos, setPos] = useState(null);
+  const [text, setText] = useState("");
+
+  useEffect(() => {
+    const handleUp = () => {
+      setTimeout(() => {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || !sel.toString().trim()) {
+          setPos(null);
+          return;
+        }
+        const range = sel.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        const selectedText = sel.toString().trim();
+        if (selectedText.length < 2) { setPos(null); return; }
+
+        // Check if selection is inside a message bubble
+        let node = range.startContainer;
+        let bubbleEl = null;
+        while (node) {
+          if (node.dataset && node.dataset.msgkey) { bubbleEl = node; break; }
+          node = node.parentElement;
+        }
+        if (!bubbleEl) { setPos(null); return; }
+
+        setText(selectedText);
+        setPos({
+          x: rect.left + rect.width / 2,
+          y: rect.top - 8,
+          msgKey: bubbleEl.dataset.msgkey,
+        });
+      }, 10);
+    };
+
+    const handleDown = () => {
+      // Don't clear immediately — let click on tooltip work
+    };
+
+    document.addEventListener("mouseup", handleUp);
+    document.addEventListener("touchend", handleUp);
+    return () => {
+      document.removeEventListener("mouseup", handleUp);
+      document.removeEventListener("touchend", handleUp);
+    };
+  }, []);
+
+  if (!pos) return null;
+
+  return (
+    <div style={{
+      position: "fixed", left: pos.x, top: pos.y,
+      transform: "translate(-50%, -100%)", zIndex: 999,
+      background: "#333", color: "#fff", padding: "6px 14px",
+      borderRadius: 8, fontSize: 12, cursor: "pointer",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+      whiteSpace: "nowrap", userSelect: "none",
+    }} onMouseDown={e => {
+      e.preventDefault();
+      e.stopPropagation();
+      onFavSelection(pos.msgKey, text);
+      setPos(null);
+      window.getSelection()?.removeAllRanges();
+    }}>
+      ♥ 收藏选中
+      <div style={{
+        position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)",
+        width: 0, height: 0, borderLeft: "6px solid transparent",
+        borderRight: "6px solid transparent", borderTop: "6px solid #333",
+      }} />
     </div>
   );
 }
@@ -392,20 +764,9 @@ function MsgBubble({ msg, isFav, onFav, convId, idx }) {
   const long = msg.text.length > 1200;
   const dt = long && !exp ? msg.text.slice(0, 1200) : msg.text;
 
-  const render = (t) => t.split("\n").map((l, i) => {
-    if (l.startsWith("# ")) return <div key={i} style={{ fontSize: 16, fontWeight: 600, margin: "10px 0 4px" }}>{l.slice(2)}</div>;
-    if (l.startsWith("## ")) return <div key={i} style={{ fontSize: 15, fontWeight: 600, margin: "8px 0 4px", color: T.textSec }}>{l.slice(3)}</div>;
-    if (l.trim() === "---" || l.trim() === "⸻") return <div key={i} style={{ borderTop: `1px solid ${T.borderLight}`, margin: "10px 0" }} />;
-    if (!l.trim()) return <div key={i} style={{ height: 6 }} />;
-    const ps = l.split(/(\*\*[^*]+\*\*)/g);
-    return <div key={i} style={{ lineHeight: 1.85 }}>{ps.map((p, j) =>
-      p.startsWith("**") && p.endsWith("**") ? <strong key={j} style={{ color: isU ? T.pinkDark : T.accentDark }}>{p.slice(2, -2)}</strong> : <span key={j}>{p}</span>
-    )}</div>;
-  });
-
   return (
     <div style={{ display: "flex", justifyContent: isU ? "flex-end" : "flex-start", marginBottom: 12, paddingLeft: isU ? 50 : 0, paddingRight: isU ? 0 : 50 }}>
-      <div style={{
+      <div data-msgkey={`${convId}|${idx}`} style={{
         maxWidth: "84%", padding: "10px 14px", position: "relative",
         borderRadius: isU ? "18px 18px 4px 18px" : "18px 18px 18px 4px",
         background: isU ? T.userBubble : T.aiBubble,
@@ -421,7 +782,7 @@ function MsgBubble({ msg, isFav, onFav, convId, idx }) {
             {isFav ? "♥" : "♡"}
           </span>
         </div>
-        <div>{render(dt)}</div>
+        <div>{renderMarkdown(dt, isU)}</div>
         {long && <div onClick={() => setExp(!exp)} style={{
           marginTop: 8, fontSize: 12, color: T.accent, cursor: "pointer", textAlign: "center",
         }}>{exp ? "收起" : `展开 (${fC(msg.text.length)})`}</div>}
@@ -430,7 +791,7 @@ function MsgBubble({ msg, isFav, onFav, convId, idx }) {
   );
 }
 
-function ChatArea({ conv, favorites, onToggleFav }) {
+function ChatArea({ conv, favorites, onToggleFav, onFavSelection }) {
   const ref = useRef(null);
   const [vc, setVc] = useState(40);
   const [q] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
@@ -535,6 +896,13 @@ function EchoVault() {
 
   const toggleFav = useCallback(id => {
     setFavs(p => { const n = new Set(p); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  }, []);
+
+  // Handle selection-based favorites
+  const handleFavSelection = useCallback((msgKey, selectedText) => {
+    // msgKey format: "convId|msgIdx"
+    const favKey = `${msgKey}|${selectedText}`;
+    setFavs(p => { const n = new Set(p); n.add(favKey); return n; });
   }, []);
 
   const filtered = useMemo(() => {
@@ -652,7 +1020,7 @@ function EchoVault() {
             width: "100%", padding: "8px 12px", background: T.bg, border: `1px solid ${T.border}`,
             borderRadius: 10, color: T.text, fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: FONT,
           }} />
-        <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 4, marginTop: 8, flexWrap: "wrap", position: "relative" }}>
           <div onClick={() => setShowCal(!showCal)} style={{
             padding: "4px 10px", borderRadius: 14, fontSize: 11, cursor: "pointer",
             background: dateFilter ? T.accentLight : T.bg, color: dateFilter ? T.accent : T.textSec,
@@ -662,12 +1030,16 @@ function EchoVault() {
             <div key={k} onClick={() => setCatFilter(catFilter === k ? null : k)} style={{
               padding: "4px 8px", borderRadius: 14, fontSize: 11, cursor: "pointer",
               background: catFilter === k ? v.color + "18" : T.bg,
-              color: catFilter === k ? v.color : T.textTer,
+              color: catFilter === k ? v.color : T.textSec,
               border: `1px solid ${catFilter === k ? v.color + "40" : "transparent"}`,
-            }}>{v.icon}</div>
+              display: "flex", alignItems: "center", gap: 2,
+            }}>
+              <span>{v.icon}</span>
+              <span>{v.label}</span>
+            </div>
           ))}
         </div>
-        {showCal && <div style={{ marginTop: 8 }}><Calendar selectedDate={dateFilter} onSelect={d => { setDateFilter(d); setShowCal(false); }} conversations={convs} /></div>}
+        {showCal && <div style={{ marginTop: 8, position: "relative", zIndex: 100 }}><Calendar selectedDate={dateFilter} onSelect={d => { setDateFilter(d); setShowCal(false); }} conversations={convs} /></div>}
         <div style={{ display: "flex", gap: 0, marginTop: 10, background: T.bg, borderRadius: 10, padding: 2 }}>
           {[
             { key: "chat", label: "对话", icon: "💬" },
@@ -741,7 +1113,7 @@ function EchoVault() {
 
   const main = view === "stats" ? <StatsView conversations={convs} /> :
     view === "favs" ? <FavoritesView conversations={convs} favorites={favs} onToggleFav={toggleFav} onJump={jumpTo} /> :
-      <ChatArea conv={sel} favorites={favs} onToggleFav={toggleFav} />;
+      <ChatArea conv={sel} favorites={favs} onToggleFav={toggleFav} onFavSelection={handleFavSelection} />;
 
   return (
     <div style={{ display: "flex", height: "100vh", background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
@@ -758,6 +1130,7 @@ function EchoVault() {
         )}
         {main}
       </div>
+      <SelectionTooltip onFavSelection={handleFavSelection} />
     </div>
   );
 }
