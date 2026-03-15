@@ -1096,9 +1096,10 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
       }}>
         {Object.entries(THEMES).map(([k, theme]) => (
           <div key={k} onClick={() => onThemeChange(k)} style={{
-            width: 16, height: 16, borderRadius: "50%", cursor: "pointer",
+            width: themeKey === k ? 22 : 18, height: themeKey === k ? 22 : 18,
+            borderRadius: "50%", cursor: "pointer",
             background: theme.topBar,
-            border: themeKey === k ? `1.5px solid ${T.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)'}` : `0.5px solid ${T.isDark ? 'rgba(255,255,255,0.1)' : theme.border}`,
+            border: themeKey === k ? `2px solid ${T.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)'}` : `0.5px solid ${T.isDark ? 'rgba(255,255,255,0.1)' : theme.border}`,
             boxShadow: "none",
             transition: "all 0.2s",
           }} title={theme.name} />
@@ -1170,9 +1171,10 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
       }}>
         {Object.entries(THEMES).map(([k, theme]) => (
           <div key={k} onClick={() => onThemeChange(k)} style={{
-            width: 16, height: 16, borderRadius: "50%", cursor: "pointer",
+            width: themeKey === k ? 22 : 18, height: themeKey === k ? 22 : 18,
+            borderRadius: "50%", cursor: "pointer",
             background: theme.topBar,
-            border: themeKey === k ? `1.5px solid ${T.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)'}` : `0.5px solid ${T.isDark ? 'rgba(255,255,255,0.1)' : theme.border}`,
+            border: themeKey === k ? `2px solid ${T.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)'}` : `0.5px solid ${T.isDark ? 'rgba(255,255,255,0.1)' : theme.border}`,
             boxShadow: "none",
             transition: "all 0.2s",
           }} title={theme.name} />
@@ -1372,7 +1374,9 @@ function EchoVault() {
       height: "100%",
       background: T.sidebar, borderRight: isMobile ? "none" : `0.5px solid ${T.sidebarBorder}`,
       display: "flex", flexDirection: "column", overflow: "hidden",
-      position: isMobile ? "fixed" : "relative", left: 0, top: 0, zIndex: 50,
+      position: isMobile ? "fixed" : "relative",
+      top: 0, left: 0, right: isMobile ? 0 : "auto", bottom: isMobile ? 0 : "auto",
+      zIndex: isMobile ? 50 : "auto",
     }}>
       {/* Sidebar header */}
       <div style={{ padding: "18px 14px 10px", flexShrink: 0 }}>
