@@ -936,6 +936,36 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
 
   const rendered = renderMarkdown(dt, isU);
 
+  // Telegram风格：时间戳+爱心 float到最后一段末尾，能同行就同行
+  const tsBlock = timeStr ? <span key="__ts" style={{
+    float: "right", marginLeft: 8, marginTop: 2,
+    display: "inline-flex", alignItems: "center", gap: 3,
+    fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer,
+    lineHeight: "18px",
+  }}>
+    <span onClick={e => { e.stopPropagation(); onFav(`${convId}-${idx}`); }}
+      style={{ cursor: "pointer", color: T.memorial, opacity: isFav ? 0.85 : 0.12, transition: "opacity 0.2s", fontSize: 10 }}>
+      {isFav ? "♥" : "♡"}
+    </span>
+    {timeStr}
+  </span> : null;
+  const spacer = timeStr ? <span key="__sp" style={{ display: "inline-block", width: 55, height: 1 }} /> : null;
+  const cf = timeStr ? <div key="__cf" style={{ clear: "both" }} /> : null;
+
+  let finalContent = rendered;
+  if (rendered.length > 0 && tsBlock) {
+    let li = rendered.length - 1;
+    while (li > 0 && rendered[li]?.props?.style?.height === 6) li--;
+    const last = rendered[li];
+    if (last && last.props) {
+      const ch = React.Children.toArray(last.props.children);
+      const newLast = React.cloneElement(last, { key: last.key }, ...ch, spacer, tsBlock, cf);
+      finalContent = [...rendered.slice(0, li), newLast, ...rendered.slice(li + 1)];
+    }
+  } else if (tsBlock) {
+    finalContent = [...rendered, spacer, tsBlock, cf];
+  }
+
   return (
     <div style={{ display: "flex", justifyContent: isU ? "flex-end" : "flex-start", marginBottom: 12, paddingLeft: isU ? 16 : 0, paddingRight: isU ? 0 : 16 }}>
       <div data-msgkey={`${convId}|${idx}`} style={{
@@ -951,21 +981,10 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
             {aiName}
           </div>
         )}
-        <div>{rendered}</div>
+        <div>{finalContent}</div>
         {long && <div onClick={() => setExp(!exp)} style={{
-          marginTop: 8, fontSize: 12, color: T.accent, cursor: "pointer", textAlign: "center",
+          marginTop: 8, fontSize: 12, color: T.accent, cursor: "pointer", textAlign: "center", clear: "both",
         }}>{exp ? "收起" : `展开 (${fC(msg.text.length)})`}</div>}
-        {/* 底部：收藏爱心 + 时间戳 */}
-        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: 2, gap: 4 }}>
-          <span onClick={e => { e.stopPropagation(); onFav(`${convId}-${idx}`); }}
-            style={{
-              cursor: "pointer", fontSize: 10, color: T.memorial,
-              opacity: isFav ? 0.85 : 0.12, transition: "opacity 0.2s",
-            }}>
-            {isFav ? "♥" : "♡"}
-          </span>
-          {timeStr && <span style={{ fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer }}>{timeStr}</span>}
-        </div>
       </div>
     </div>
   );
@@ -1066,7 +1085,7 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
         <div style={{ fontSize: 13, letterSpacing: 1, fontStyle: "italic" }}>选择一段对话</div>
       </div>
       {/* 即使没选对话也保留底部主题栏 */}
-      <div style={{
+      <div className="safe-area-bottom" style={{
         minHeight: 40, flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
@@ -1140,7 +1159,7 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
         )}
       </div>
       {/* ─── 底部主题切换栏 ─── */}
-      <div style={{
+      <div className="safe-area-bottom" style={{
         minHeight: 40, flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
@@ -1478,7 +1497,7 @@ function EchoVault() {
       <ChatArea conv={sel} favorites={favs} onToggleFav={toggleFav} onFavSelection={handleFavSelection} themeKey={themeKey} onThemeChange={setThemeKey} />;
 
   return (
-    <div className="safe-area-bottom" style={{ display: "flex", flexDirection: "column", height: "100vh", background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
       {/* ─── Top Bar ──────────────────────────────────────────────── */}
       <div style={{
         background: T.topBar,
