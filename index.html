@@ -1097,8 +1097,8 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
           <div key={k} onClick={() => onThemeChange(k)} style={{
             width: 16, height: 16, borderRadius: "50%", cursor: "pointer",
             background: theme.topBar,
-            border: themeKey === k ? "1.5px solid rgba(255,255,255,0.95)" : `0.5px solid ${theme.border}`,
-            boxShadow: themeKey === k ? `0 0 0 1px ${theme.accent}` : "none",
+            border: themeKey === k ? `1.5px solid ${T.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)'}` : `0.5px solid ${T.isDark ? 'rgba(255,255,255,0.1)' : theme.border}`,
+            boxShadow: "none",
             transition: "all 0.2s",
           }} title={theme.name} />
         ))}
@@ -1171,8 +1171,8 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
           <div key={k} onClick={() => onThemeChange(k)} style={{
             width: 16, height: 16, borderRadius: "50%", cursor: "pointer",
             background: theme.topBar,
-            border: themeKey === k ? "1.5px solid rgba(255,255,255,0.95)" : `0.5px solid ${theme.border}`,
-            boxShadow: themeKey === k ? `0 0 0 1px ${theme.accent}` : "none",
+            border: themeKey === k ? `1.5px solid ${T.isDark ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.9)'}` : `0.5px solid ${T.isDark ? 'rgba(255,255,255,0.1)' : theme.border}`,
+            boxShadow: "none",
             transition: "all 0.2s",
           }} title={theme.name} />
         ))}
@@ -1211,6 +1211,7 @@ function EchoVault() {
     document.documentElement.style.setProperty('--chat-scroll-thumb', T.isDark ? T.border : T.textTer);
     document.documentElement.style.setProperty('--chat-scroll-hover', T.isDark ? T.textTer : T.textSec);
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', T.topBar);
+    document.body.style.background = T.bg;
     idbSaveMeta("theme", themeKey).catch(() => {});
   }, [themeKey]);
 
