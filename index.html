@@ -33,7 +33,10 @@
   @keyframes floatGlow { 0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; } 50% { transform: translate(30px, -20px) scale(1.1); opacity: 0.6; } }
   @keyframes floatGlow2 { 0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; } 50% { transform: translate(-20px, 15px) scale(1.15); opacity: 0.5; } }
   @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .theme-bar-bottom {
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .safe-area-bottom {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   @media (max-width: 767px) {
@@ -942,19 +945,9 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
         border: isU ? "none" : `0.5px solid ${T.aiBubbleBorder}`,
         boxShadow: T.shadow, fontSize: 14, color: bubbleText,
       }}>
-        {/* 右上角收藏爱心 */}
-        <span onClick={e => { e.stopPropagation(); onFav(`${convId}-${idx}`); }}
-          style={{
-            position: "absolute", top: 8, right: 10,
-            cursor: "pointer", fontSize: 12, color: T.memorial,
-            opacity: isFav ? 0.85 : 0.12, transition: "opacity 0.2s",
-            zIndex: 2,
-          }}>
-          {isFav ? "♥" : "♡"}
-        </span>
         {/* 纤凝气泡：左上角名字标签 */}
         {!isU && (
-          <div style={{ fontSize: 11, color: T.accent, fontWeight: 500, opacity: 0.85, marginBottom: 4, paddingRight: 16 }}>
+          <div style={{ fontSize: 11, color: T.accent, fontWeight: 500, opacity: 0.85, marginBottom: 4 }}>
             {aiName}
           </div>
         )}
@@ -962,9 +955,17 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
         {long && <div onClick={() => setExp(!exp)} style={{
           marginTop: 8, fontSize: 12, color: T.accent, cursor: "pointer", textAlign: "center",
         }}>{exp ? "收起" : `展开 (${fC(msg.text.length)})`}</div>}
-        {timeStr && <div style={{ textAlign: "right", marginTop: 2 }}>
-          <span style={{ fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer }}>{timeStr}</span>
-        </div>}
+        {/* 底部：收藏爱心 + 时间戳 */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: 2, gap: 4 }}>
+          <span onClick={e => { e.stopPropagation(); onFav(`${convId}-${idx}`); }}
+            style={{
+              cursor: "pointer", fontSize: 10, color: T.memorial,
+              opacity: isFav ? 0.85 : 0.12, transition: "opacity 0.2s",
+            }}>
+            {isFav ? "♥" : "♡"}
+          </span>
+          {timeStr && <span style={{ fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer }}>{timeStr}</span>}
+        </div>
       </div>
     </div>
   );
@@ -1065,7 +1066,7 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
         <div style={{ fontSize: 13, letterSpacing: 1, fontStyle: "italic" }}>选择一段对话</div>
       </div>
       {/* 即使没选对话也保留底部主题栏 */}
-      <div className="theme-bar-bottom" style={{
+      <div style={{
         minHeight: 40, flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
@@ -1139,7 +1140,7 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
         )}
       </div>
       {/* ─── 底部主题切换栏 ─── */}
-      <div className="theme-bar-bottom" style={{
+      <div style={{
         minHeight: 40, flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
@@ -1344,7 +1345,7 @@ function EchoVault() {
 
   // ─── Sidebar ──────────────────────────────────────────────────────
   const sidebar = (
-    <div style={{
+    <div className={isMobile ? "safe-area-top safe-area-bottom" : ""} style={{
       width: isMobile ? "100%" : 280, minWidth: isMobile ? "auto" : 280,
       height: isMobile ? "100vh" : "100%",
       background: T.sidebar, borderRight: isMobile ? "none" : `0.5px solid ${T.sidebarBorder}`,
@@ -1477,7 +1478,7 @@ function EchoVault() {
       <ChatArea conv={sel} favorites={favs} onToggleFav={toggleFav} onFavSelection={handleFavSelection} themeKey={themeKey} onThemeChange={setThemeKey} />;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
+    <div className="safe-area-bottom" style={{ display: "flex", flexDirection: "column", height: "100vh", background: T.bg, fontFamily: FONT, overflow: "hidden" }}>
       {/* ─── Top Bar ──────────────────────────────────────────────── */}
       <div style={{
         background: T.topBar,
