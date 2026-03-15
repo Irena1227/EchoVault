@@ -1088,11 +1088,11 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
       </div>
       {/* 即使没选对话也保留底部主题栏 */}
       <div className="safe-area-bottom" style={{
-        minHeight: 40, flexShrink: 0,
+        flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "0 16px", gap: 6,
+        padding: "8px 16px 4px", gap: 6,
       }}>
         {Object.entries(THEMES).map(([k, theme]) => (
           <div key={k} onClick={() => onThemeChange(k)} style={{
@@ -1162,11 +1162,11 @@ function ChatArea({ conv, favorites, onToggleFav, onFavSelection, themeKey, onTh
       </div>
       {/* ─── 底部主题切换栏 ─── */}
       <div className="safe-area-bottom" style={{
-        minHeight: 40, flexShrink: 0,
+        flexShrink: 0,
         background: T.bg,
         borderTop: `0.5px solid ${T.border}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "0 16px", gap: 6,
+        padding: "8px 16px 4px", gap: 6,
       }}>
         {Object.entries(THEMES).map(([k, theme]) => (
           <div key={k} onClick={() => onThemeChange(k)} style={{
@@ -1315,7 +1315,7 @@ function EchoVault() {
   if (incant) return <Incantation onDone={() => setIncant(false)} />;
 
   if (loading) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: T.bg, fontFamily: FONT }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "fixed", inset: 0, background: T.bg, fontFamily: FONT }}>
       <div style={{ textAlign: "center" }}>
         <div style={{ width: 20, height: 20, border: `2px solid ${T.border}`, borderTopColor: T.accent, borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
         <div style={{ fontSize: 12, color: T.textSec }}>加载中...</div>
@@ -1324,7 +1324,7 @@ function EchoVault() {
   );
 
   if (convs.length === 0) return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: T.bg, fontFamily: FONT }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "fixed", inset: 0, background: T.bg, fontFamily: FONT }}>
       <div style={{ textAlign: "center", maxWidth: 420, padding: 32 }}>
         <div style={{ fontSize: 10, letterSpacing: 6, color: T.textTer, marginBottom: 12, fontFamily: MONO }}>ECHOVAULT</div>
         <div style={{ fontSize: 22, fontWeight: 300, letterSpacing: 3, marginBottom: 8, color: T.text }}>语言巢</div>
@@ -1369,7 +1369,7 @@ function EchoVault() {
   const sidebar = (
     <div className={isMobile ? "safe-area-top safe-area-bottom" : ""} style={{
       width: isMobile ? "100%" : 280, minWidth: isMobile ? "auto" : 280,
-      height: isMobile ? "100vh" : "100%",
+      height: "100%",
       background: T.sidebar, borderRight: isMobile ? "none" : `0.5px solid ${T.sidebarBorder}`,
       display: "flex", flexDirection: "column", overflow: "hidden",
       position: isMobile ? "fixed" : "relative", left: 0, top: 0, zIndex: 50,
