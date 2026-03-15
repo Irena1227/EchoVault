@@ -17,8 +17,9 @@
     --scrollbar-thumb: #d0cdc4;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body, #root { height: 100%; overflow: hidden; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif; -webkit-font-smoothing: antialiased; }
+  html { height: 100%; overflow: hidden; background: var(--app-bg, #FAF9F4); }
+  body { height: 100%; overflow: hidden; background: var(--app-bg, #FAF9F4); font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif; -webkit-font-smoothing: antialiased; }
+  #root { height: 100%; overflow: hidden; }
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 2px; }
@@ -1211,7 +1212,7 @@ function EchoVault() {
     document.documentElement.style.setProperty('--chat-scroll-thumb', T.isDark ? T.border : T.textTer);
     document.documentElement.style.setProperty('--chat-scroll-hover', T.isDark ? T.textTer : T.textSec);
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', T.topBar);
-    document.body.style.background = T.bg;
+    document.documentElement.style.setProperty('--app-bg', T.bg);
     idbSaveMeta("theme", themeKey).catch(() => {});
   }, [themeKey]);
 
