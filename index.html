@@ -938,10 +938,10 @@ function MsgBubble({ msg, isFav, onFav, convId, idx, defaultModelSlug }) {
 
   // Telegram风格：时间戳+爱心 float到最后一段末尾，能同行就同行
   const tsBlock = timeStr ? <span key="__ts" style={{
-    float: "right", marginLeft: 8, marginTop: 2,
+    float: "right", marginLeft: 8, marginTop: 8,
     display: "inline-flex", alignItems: "center", gap: 3,
     fontSize: 9, color: isU ? `${T.userBubbleText}77` : T.textTer,
-    lineHeight: "18px",
+    lineHeight: "14px",
   }}>
     <span onClick={e => { e.stopPropagation(); onFav(`${convId}-${idx}`); }}
       style={{ cursor: "pointer", color: T.memorial, opacity: isFav ? 0.85 : 0.12, transition: "opacity 0.2s", fontSize: 10 }}>
